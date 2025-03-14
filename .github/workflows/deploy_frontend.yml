@@ -1,0 +1,45 @@
+name: Build and Deploy Angular 17 to AWS S3 and CloudFront
+
+on:
+  push:
+    branches:
+      - main  # Deploys when code is pushed to the main branch
+  workflow_dispatch:  # Allows manual trigger via Github Actions
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js 20.18.3
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20.18.3
+          cache: 'npm'
+
+      - name: Install Angular CLI v17
+        run: npm install -g @angular/cli@17.3.12
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Build Angular App
+        run: ng build --configuration=production
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v2
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ secrets.AWS_REGION }}
+
+      - name: Deploy to S3
+        run: aws s3 sync dist/sous-and-you s3://${{ secrets.AWS_S3_BUCKET }} --delete
+
+      - name: Invalidate CloudFront Cache
+        run: |
+          aws cloudfront create-invalidation --distribution-id ${{ secrets.CLOUDFRONT_DISTRIBUTION_ID }} --paths "/*"
+        if: ${{ secrets.CLOUDFRONT_DISTRIBUTION_ID != '' }}
