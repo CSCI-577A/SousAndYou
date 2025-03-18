@@ -1,0 +1,58 @@
+.home-container {
+  background-color: #2d4c3b;
+  min-height: 100vh;
+  color: white;
+  font-family: Arial, sans-serif;
+}
+
+.search-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 70vh;
+  text-align: center;
+}
+
+h1 {
+  margin-bottom: 2rem;
+  font-size: 1.8rem;
+  font-weight: normal;
+}
+
+.search-box {
+  position: relative;
+  width: 100%;
+  max-width: 500px;
+}
+
+input[type="text"] {
+  width: 100%;
+  padding: 12px 50px 12px 20px;
+  border-radius: 30px;
+  border: none;
+  font-size: 1rem;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+button {
+  position: absolute;
+  right: 5px;
+  top: 50%;
+  transform: translateY(-50%);
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 8px;
+}
+
+button svg {
+  fill: #757575;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .search-container {
+    padding: 0 1rem;
+  }
+}
