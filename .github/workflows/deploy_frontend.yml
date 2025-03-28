@@ -9,6 +9,9 @@ on:
 jobs:
   build-and-deploy:
     runs-on: ubuntu-latest
+    permissions:
+      id-token: write   # OIDC
+      contents: read
 
     steps:
       - name: Checkout repository
@@ -29,11 +32,10 @@ jobs:
       - name: Build Angular App
         run: ng build --configuration=production
 
-      - name: Configure AWS credentials
+      - name: Configure AWS credentials OIDC
         uses: aws-actions/configure-aws-credentials@v2
         with:
-          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          role-to-assume: ${{ secrets.AWS_OIDC_ARN }}
           aws-region: ${{ secrets.AWS_REGION }}
 
       - name: Deploy to S3
