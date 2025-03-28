@@ -1,20 +1,22 @@
 from flask import Flask, request, jsonify
+from flask_cors import CORS
 
 app = Flask(__name__)
+CORS(app)  
 
-data_store = ["test"]  # Simple in-memory storage
+data_store = []  
 
-@app.route("/data", methods=["GET"])
-def get_data():
-    return jsonify({"data": data_store})
 
-@app.route("/data", methods=["POST"])
-def set_data():
-    new_data = request.json.get("item")
-    if new_data:
-        data_store.append(new_data)
-        return jsonify({"message": "Data added", "data": data_store}), 201
-    return jsonify({"error": "No data provided"}), 400
+@app.route("/search", methods=["POST"])
+def search_data():
+    query = request.json.get("query", "").lower()
+    print(f"Received search query: {query}")  # Debugging log
+
+    results = [item for item in data_store if query in item.lower()]
+    print(f"Search results: {results}")  # Debugging log
+
+    return jsonify({"results": results})
+
 
 if __name__ == "__main__":
     app.run(debug=True)
