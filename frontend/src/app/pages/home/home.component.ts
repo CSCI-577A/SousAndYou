@@ -27,13 +27,5 @@ export class HomeComponent {
         this.searchResults = response.results;
         console.log('Search Results:', this.searchResults);
       });
-
-  //onSearch(): void {
-    //if (this.searchQuery.trim()) {
-      // Navigate to results page with the search query
-    //  this.router.navigate(['/results'], {
-    //    queryParams: { query: this.searchQuery },
-    //  });
-   // }
   }
 }
