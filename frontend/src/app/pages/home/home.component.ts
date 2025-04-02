@@ -2,6 +2,7 @@ import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
+import { HttpClient } from '@angular/common/http';
 // import { NavbarComponent } from '../../shared/navbar/navbar.component';
 
 @Component({
@@ -14,15 +15,17 @@ import { Router } from '@angular/router';
 })
 export class HomeComponent {
   searchQuery: string = '';
+  searchResults: string[] = [];
 
-  constructor(private router: Router) {}
+  constructor(private http: HttpClient) {}
 
-  onSearch(): void {
-    if (this.searchQuery.trim()) {
-      // Navigate to results page with the search query
-      this.router.navigate(['/results'], {
-        queryParams: { query: this.searchQuery },
+  ngOnInit() {}
+
+  searchItem() {
+    this.http.post<{ results: string[] }>('http://127.0.0.1:5000/search', { query: this.searchQuery })
+      .subscribe(response => {
+        this.searchResults = response.results;
+        console.log('Search Results:', this.searchResults);
       });
-    }
   }
 }
