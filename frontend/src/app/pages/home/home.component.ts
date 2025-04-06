@@ -16,13 +16,25 @@ import { HttpClient } from '@angular/common/http';
 export class HomeComponent {
   searchQuery: string = '';
   searchResults: string[] = [];
-
+  userId = localStorage.getItem("user_id");
+  user = localStorage.getItem("user");
   constructor(private http: HttpClient) {}
 
-  ngOnInit() {}
+  ngOnInit():void {
+    const storedId = localStorage.getItem('user_id');
+    if (!storedId) {
+      this.http.get<any>('http://127.0.0.1:5000/user/create').subscribe(res => {
+        localStorage.setItem('user_id', res.user_id);
+        console.log('New user created:', res.user);
+        localStorage.setItem('user', res.user)
+      });
+    } else {
+      console.log('Existing user:', storedId);
+    }}
+
 
   searchItem() {
-    this.http.post<{ results: string[] }>('http://127.0.0.1:5000/search', { query: this.searchQuery })
+    this.http.post<{ results: string[] }>('http://127.0.0.1:5000/search', { query: this.searchQuery, user: localStorage.getItem("user") })
       .subscribe(response => {
         this.searchResults = response.results;
         console.log('Search Results:', this.searchResults);
