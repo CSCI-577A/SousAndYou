@@ -1,13 +1,7 @@
-# user.py
-
 import redis
-import json
 
-# Simulated RecipeManager
-
-
-# Connect to Redis (adjust host/port/db as needed)
-redis_client = redis.Redis(host='localhost', port=6379, db=0, decode_responses=True)
+# Connect to Redis
+redis_client = redis.Redis(host='localhost', port=6379, db=0, decode_responses=False)
 
 class User:
     def __init__(self, user_id, name, preferences=None):
@@ -20,6 +14,7 @@ class User:
             "ingredient_availability": []
         }
         self.history = []
+
 
     def _get_query_cache_key(self):
         return f"user:{self.user_id}:queries"
