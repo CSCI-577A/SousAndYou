@@ -42,7 +42,7 @@ jobs:
 
       - name: Invalidate CloudFront cache
         env:
-          super_secret =  ${{ secrets.CLOUDFRONT_DISTRIBUTION_ID }}
+          super_secret:  ${{ secrets.CLOUDFRONT_DISTRIBUTION_ID }}
         if: ${{ env.super_secret != '' }}
         run: |
           aws cloudfront create-invalidation \
