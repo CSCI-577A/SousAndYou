@@ -2,8 +2,7 @@ name: Build and Deploy Angular 17 to AWS S3 and CloudFront
 
 on:
   push:
-    branches:
-      - main  # Deploys when code is pushed to the main branch
+    branches: [main, feature-frontend-deployment]  # Deploys when code is pushed to the main branch
   workflow_dispatch:  # Allows manual trigger via Github Actions
 
 jobs:
