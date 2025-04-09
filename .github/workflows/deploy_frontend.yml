@@ -2,8 +2,7 @@ name: Build and Deploy Angular 17 to AWS S3 and CloudFront
 
 on:
   push:
-    branches:
-      - main  # Deploys when code is pushed to the main branch
+    branches: [main, feature-frontend-deployment]  # Deploys when code is pushed to the main branch
   workflow_dispatch:  # Allows manual trigger via Github Actions
 
 jobs:
@@ -41,7 +40,10 @@ jobs:
       - name: Deploy to S3
         run: aws s3 sync dist/sous-and-you s3://${{ secrets.AWS_S3_BUCKET }} --delete
 
-      - name: Invalidate CloudFront Cache
-        run: |
-          aws cloudfront create-invalidation --distribution-id ${{ secrets.CLOUDFRONT_DISTRIBUTION_ID }} --paths "/*"
+      - name: Invalidate CloudFront cache
         if: ${{ secrets.CLOUDFRONT_DISTRIBUTION_ID != '' }}
+        run: |
+          aws cloudfront create-invalidation \
+            --distribution-id ${{ secrets.CLOUDFRONT_DISTRIBUTION_ID }} \
+            --paths "/*"
+
