@@ -31,7 +31,7 @@ jobs:
         working-directory: frontend
 
       - name: Build Angular App
-        run: ng build --configuration=production
+        run: ng build --configuration=production --base-href /
         working-directory: frontend
 
       - name: Configure AWS credentials OIDC
@@ -41,7 +41,12 @@ jobs:
           aws-region: ${{ secrets.AWS_REGION }}
 
       - name: Deploy to S3
-        run: aws s3 sync frontend/dist/sous-and-you s3://${{ secrets.AWS_S3_BUCKET }} --delete
+        run: aws s3 sync frontend/dist/sous-and-you s3://${{ secrets.AWS_S3_BUCKET }} \
+          --delete \
+          --content-type "" \
+          --metadata-directive REPLACE
+          
+
 
       - name: Invalidate CloudFront cache
         env:
