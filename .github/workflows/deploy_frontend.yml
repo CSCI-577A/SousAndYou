@@ -41,7 +41,7 @@ jobs:
           aws-region: ${{ secrets.AWS_REGION }}
 
       - name: Deploy to S3
-        run: aws s3 sync dist/sous-and-you s3://${{ secrets.AWS_S3_BUCKET }} --delete
+        run: aws s3 sync frontend/dist/sous-and-you s3://${{ secrets.AWS_S3_BUCKET }} --delete
 
       - name: Invalidate CloudFront cache
         env:
