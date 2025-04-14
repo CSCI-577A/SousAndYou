@@ -2,13 +2,15 @@ name: Build and Deploy Angular 17 to AWS S3 and CloudFront
 
 on:
   push:
-    branches:
-      - main  # Deploys when code is pushed to the main branch
+    branches: [main]  # Deploys when code is pushed to the main branch
   workflow_dispatch:  # Allows manual trigger via Github Actions
 
 jobs:
   build-and-deploy:
     runs-on: ubuntu-latest
+    permissions:
+      id-token: write   # OIDC
+      contents: read
 
     steps:
       - name: Checkout repository
@@ -19,27 +21,40 @@ jobs:
         with:
           node-version: 20.18.3
           cache: 'npm'
+          cache-dependency-path: frontend/package-lock.json
 
       - name: Install Angular CLI v17
         run: npm install -g @angular/cli@17.3.12
 
       - name: Install dependencies
         run: npm install
+        working-directory: frontend
 
       - name: Build Angular App
-        run: ng build --configuration=production
+        run: ng build --configuration=production --base-href /
+        working-directory: frontend
 
-      - name: Configure AWS credentials
+      - name: Configure AWS credentials OIDC
         uses: aws-actions/configure-aws-credentials@v2
         with:
-          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          role-to-assume: ${{ secrets.AWS_OIDC_ARN }}
           aws-region: ${{ secrets.AWS_REGION }}
 
       - name: Deploy to S3
-        run: aws s3 sync dist/sous-and-you s3://${{ secrets.AWS_S3_BUCKET }} --delete
-
-      - name: Invalidate CloudFront Cache
         run: |
-          aws cloudfront create-invalidation --distribution-id ${{ secrets.CLOUDFRONT_DISTRIBUTION_ID }} --paths "/*"
-        if: ${{ secrets.CLOUDFRONT_DISTRIBUTION_ID != '' }}
+          aws s3 sync frontend/dist/sous-and-you/browser s3://${{ secrets.AWS_S3_BUCKET }} \
+            --delete \
+            --content-type "" \
+            --metadata-directive REPLACE
+          
+
+
+      - name: Invalidate CloudFront cache
+        env:
+          super_secret:  ${{ secrets.CLOUDFRONT_DISTRIBUTION_ID }}
+        if: ${{ env.super_secret != '' }}
+        run: |
+          aws cloudfront create-invalidation \
+            --distribution-id ${{ secrets.CLOUDFRONT_DISTRIBUTION_ID }} \
+            --paths "/*"
+
