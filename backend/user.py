@@ -1,8 +1,13 @@
 import redis
+import requests
 
+# Replace this with your EC2 public IP
+EC2_HOST = 'http://35.164.2.29:5000'
 # Connect to Redis
 redis_client = redis.Redis(host='localhost', port=6379, db=0, decode_responses=False)
-
+print("Redis ping:", redis_client.ping())
+redis_client.set("test_key", "test_value")
+print("Value for test_key:", redis_client.get("test_key"))
 class User:
     def __init__(self, user_id, name, preferences=None):
         self.user_id = user_id
@@ -32,8 +37,20 @@ class User:
     def get_recipe_suggestions(self, user_input):
         # cache the query
         self.cache_query(user_input)
-        # TODO: Do stuff with Claude
-        # TODO: call recipe manager
-        print(f'User Input: {user_input}')
-        return user_input
+        url = f"{EC2_HOST}/chat"
+        headers = {
+            "Content-Type": "application/json"
+        }
+        payload = {
+            "message": user_input
+        }
+
+        try:
+            response = requests.post(url, headers=headers, json=payload)
+            response.raise_for_status()
+            data = response.json()
+            return data.get("response", "No response field in result.")
+        except Exception as e:
+            print("Error:", e)
+            return None
 
