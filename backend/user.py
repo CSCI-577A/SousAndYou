@@ -1,7 +1,6 @@
 import redis
 import requests
 
-# Replace this with your EC2 public IP
 EC2_HOST = 'http://35.164.2.29:5000'
 # Connect to Redis
 redis_client = redis.Redis(host='localhost', port=6379, db=0, decode_responses=False)
