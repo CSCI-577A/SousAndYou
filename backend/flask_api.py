@@ -21,21 +21,21 @@ def auto_create_user():
 @app.route("/search", methods=["POST"])
 def search_data():
     print("Incoming JSON:", request.json)
+    print("Redis ping:", redis_client.ping())
     input = request.json.get("query", "").strip()
     user_id = request.json.get("user_id", "").strip()
     print(f"Received search query: {input}")  # Debugging log
     if not input:
         return jsonify({"error": "No user input provided. Please enter an input."}), 400
-    print("meep")
     print(user_id)
     raw_user = redis_client.get(user_id)
+    print(raw_user)
     if not raw_user:
         return jsonify({"error": "User not found"}), 404
     user = pickle.loads(raw_user)
     print(user)
-    # TODO: get data results from claude/db
     output = user.get_recipe_suggestions(input)
-
+    print(output)
     return jsonify({"results": output})
 @app.route("/set", methods=["GET"])
 def set_user_input():
