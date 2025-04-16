@@ -45,7 +45,7 @@ jobs:
               "aws s3 cp s3://${{ secrets.AWS_BACKEND_S3_BUCKET }}/backend.zip ./",
               "unzip -o backend.zip",
               "pip install -r requirements.txt",
-              "docker run --name localhost -p 6379:6379 -d redis || true",
+              "docker ps -a --format '{{.Names}}' | grep -q '^localhost$' && docker start localhost || docker run --name localhost -p 6379:6379 -d redis",
               "nohup python3 flask_api.py > flask.log 2>&1 &",
               "cd /home/ec2-user/backend",
               "source venv/bin/activate",
