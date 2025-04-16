@@ -46,10 +46,12 @@ class User:
 
         try:
             response = requests.post(url, headers=headers, json=payload, verify=False)
+            print("Raw response:", response.text)
             response.raise_for_status()
             data = response.json()
+            print("Parsed JSON:", data)
             return data.get("response", "No response field in result.")
         except Exception as e:
-            print("Error:", e)
+            print("Error in get_recipe_suggestions:", e)
             return None
 
