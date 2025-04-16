@@ -29,7 +29,7 @@ jobs:
 
       - name: Upload to backend S3 bucket
         run: |
-          aws s3 cp backend.zip s3://${{ secrets.AWS_BACKEND_S3_BUCKET }}/backend.zip
+          aws s3 cp backend/backend.zip s3://${{ secrets.AWS_BACKEND_S3_BUCKET }}/backend.zip
       
       - name: Deploy to EC2 with SSM agent
         run: |
