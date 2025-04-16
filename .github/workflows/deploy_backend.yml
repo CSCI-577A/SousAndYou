@@ -38,7 +38,8 @@ jobs:
             --instance-ids ${{ secrets.AWS_EC2_INSTANCE_ID }} \
             --comment "Deploy Backend Flask Endpoint" \
             --parameters 'commands=[
-              "cd ${{ secrets.EC2_BACKEND_DIR }} || mkdir -p ${{ secrets.EC2_BACKEND_DIR }} && cd ${{ secrets.EC2_BACKEND_DIR }}",
+              "mkdir -p ${{ secrets.EC2_BACKEND_DIR }}",
+              "cd ${{ secrets.EC2_BACKEND_DIR }}",
               "aws s3 cp s3://${{ secrets.AWS_BACKEND_S3_BUCKET }}/backend.zip ./",
               "unzip -o backend.zip",
               "pip install -r requirements.txt",
