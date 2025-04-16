@@ -45,7 +45,7 @@ class User:
         }
 
         try:
-            response = requests.post(url, headers=headers, json=payload)
+            response = requests.post(url, headers=headers, json=payload, verify=False)
             response.raise_for_status()
             data = response.json()
             return data.get("response", "No response field in result.")
