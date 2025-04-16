@@ -40,6 +40,8 @@ jobs:
             --parameters 'commands=[
               "mkdir -p ${{ secrets.EC2_BACKEND_DIR }}",
               "cd ${{ secrets.EC2_BACKEND_DIR }}",
+              "pkill -f flask_api.py || true",
+              "pkill -f app.py || true",
               "aws s3 cp s3://${{ secrets.AWS_BACKEND_S3_BUCKET }}/backend.zip ./",
               "unzip -o backend.zip",
               "pip install -r requirements.txt",
