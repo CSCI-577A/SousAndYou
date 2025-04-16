@@ -44,7 +44,7 @@ jobs:
               "pkill -f app.py || true",
               "aws s3 cp s3://${{ secrets.AWS_BACKEND_S3_BUCKET }}/backend.zip ./",
               "unzip -o backend.zip",
-              "source venv/bin/activate"
+              "source venv/bin/activate",
               "pip install -r requirements.txt",
               "docker ps -a --format '{{.Names}}' | grep -q '^localhost$' && docker start localhost || docker run --name localhost -p 6379:6379 -d redis",
               "nohup python3 /home/ec2-user/backend-deployment/flask_api.py > flask.log 2>&1 &",
