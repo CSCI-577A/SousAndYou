@@ -1,7 +1,7 @@
 import redis
 import requests
 
-EC2_HOST = 'http://35.164.2.29:5000'
+EC2_HOST = 'http://44.237.212.169:5001'
 # Connect to Redis
 redis_client = redis.Redis(host='localhost', port=6379, db=0, decode_responses=False)
 print("Redis ping:", redis_client.ping())
