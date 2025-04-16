@@ -4,7 +4,7 @@ import pickle
 from user_manager import create_user, redis_client
 
 app = Flask(__name__)
-CORS(app)  
+CORS(app, resources={r"/*": {"origins": "https://d3h83wdyrx615b.cloudfront.net"}})
 
 data_store = []
 

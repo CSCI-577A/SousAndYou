@@ -32,7 +32,7 @@ export class HomeComponent {
 
 
   searchItem() {
-    this.http.post<{ results: string[] }>('https://44.237.212.169/search',
+    this.http.post<{ results: string[] }>('https://44.237.212.169:5001/search',
       { query: this.searchQuery, user_id: localStorage.getItem('user_id') })
       .subscribe(response => {
         this.searchResults = response.results;
