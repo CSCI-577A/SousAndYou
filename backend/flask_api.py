@@ -31,13 +31,13 @@ def auto_create_user():
     }), 201
 @app.route("/search", methods=["POST"], strict_slashes = False)
 def search_data():
-    print("user_id from request:", user_id)
     print("Redis keys:", redis_client.keys("*"))
     print("raw_user from Redis:", raw_user)
     print("Incoming JSON:", request.json)
     print("Redis ping:", redis_client.ping())
     input = request.json.get("query", "").strip()
     user_id = request.json.get("user_id", "").strip()
+    print("user_id from request:", user_id)
     print(f"Received search query: {input}")  # Debugging log
     if not input:
         return jsonify({"error": "No user input provided. Please enter an input."}), 400
