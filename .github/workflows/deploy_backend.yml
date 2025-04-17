@@ -2,7 +2,7 @@ name: Deploy Backend to EC2 using AWS SSM agent
 
 on:
   push:
-    branches: [feature-backend-deployment]
+    branches: [main]
   workflow_dispatch:
 
 jobs:
