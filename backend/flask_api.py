@@ -10,6 +10,11 @@ data_store = []
 
 users = {}
 user_counter = 1
+
+@app.before_request
+def log_request():
+    print(f"[Flask] {request.method} {request.path}")
+
 @app.route("/user/create", methods=["GET"])
 def auto_create_user():
     # create new user and cache
@@ -43,6 +48,7 @@ def set_user_input():
 @app.route("/data", methods=["GET"])
 def get_data():
     return jsonify({"data": data_store})
+    
 
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=5000, debug=True)
