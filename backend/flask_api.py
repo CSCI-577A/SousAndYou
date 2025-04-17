@@ -49,8 +49,9 @@ def search_data():
         user = create_user()
         user.user_id = user_id
         redis_client.set(user.user_id, pickle.dumps(user))
-        return(jsonify({"message": "New user created due to missing ID", "user_id": user.user_id, "results": []}), 201)
-    user = pickle.loads(raw_user)
+        print(jsonify({"message": "New user created due to missing ID", "user_id": user.user_id, "results": []}), 201)
+    else:
+        user = pickle.loads(raw_user)
     print(user)
     output = user.get_recipe_suggestions(input)
     print(output)
