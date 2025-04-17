@@ -2,4 +2,3 @@ Flask
 flask-cors
 redis
 redis-cli
-requests

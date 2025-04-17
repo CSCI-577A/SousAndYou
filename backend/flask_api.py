@@ -42,7 +42,6 @@ def search_data():
         return jsonify({"error": "No user input provided. Please enter an input."}), 400
     print(user_id)
     raw_user = redis_client.get(user_id)
-    print("raw_user from Redis:", raw_user)
     print(raw_user)
     if not raw_user:
         print(f"User ID {user_id} not found - creating a fallback user.")
