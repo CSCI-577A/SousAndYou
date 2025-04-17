@@ -47,8 +47,9 @@ def search_data():
     if not raw_user:
         print(f"User ID {user_id} not found - creating a fallback user.")
         user = create_user()
+        user.user_id = user_id
         redis_client.set(user.user_id, pickle.dumps(user))
-        print(jsonify({"message": "New user created due to missing ID", "user_id": user.user_id, "results": []}), 201)
+        return(jsonify({"message": "New user created due to missing ID", "user_id": user.user_id, "results": []}), 201)
     user = pickle.loads(raw_user)
     print(user)
     output = user.get_recipe_suggestions(input)
