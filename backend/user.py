@@ -1,7 +1,7 @@
 import redis
 import requests
 
-EC2_HOST = 'http://35.164.2.29:5000'
+EC2_HOST = 'http://44.237.212.169:5001'
 # Connect to Redis
 redis_client = redis.Redis(host='localhost', port=6379, db=0, decode_responses=False)
 print("Redis ping:", redis_client.ping())
@@ -45,11 +45,13 @@ class User:
         }
 
         try:
-            response = requests.post(url, headers=headers, json=payload)
+            response = requests.post(url, headers=headers, json=payload, verify=False)
+            print("Raw response:", response.text)
             response.raise_for_status()
             data = response.json()
+            print("Parsed JSON:", data)
             return data.get("response", "No response field in result.")
         except Exception as e:
-            print("Error:", e)
+            print("Error in get_recipe_suggestions:", e)
             return None
 
