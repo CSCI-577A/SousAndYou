@@ -22,7 +22,7 @@ export class HomeComponent {
   ngOnInit():void {
     const storedId = localStorage.getItem('user_id');
     if (!storedId) {
-      this.http.get<any>('http://44.237.212.169/user/create').subscribe(res => {
+      this.http.get<any>('https://44.237.212.169/user/create').subscribe(res => {
         localStorage.setItem('user_id', res.user_id);
         console.log('New user created:', res.user_id);
       });
