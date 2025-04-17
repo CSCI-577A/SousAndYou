@@ -46,7 +46,7 @@ jobs:
               "unzip -o backend.zip",
               "pip install -r requirements.txt",
               "docker ps -a --format '{{.Names}}' | grep -q '^localhost$' && docker start localhost || docker run --name localhost -p 6379:6379 -d redis",
-              "docker exec localhost redis-cli set healthcheck writable || (echo "Redis is read-only, recreating..." && docker rm -f localhost && docker run --name localhost -p 6379:6379 -d redis)",
+              "docker exec localhost redis-cli set healthcheck writable || (echo \"Redis is read-only, recreating...\" && docker rm -f localhost && docker run --name localhost -p 6379:6379 -d redis)",
               "nohup python3 /home/ec2-user/backend-deployment/flask_api.py > flask.log 2>&1 &",
               "cd /home/ec2-user/backend",
               "source venv/bin/activate",
