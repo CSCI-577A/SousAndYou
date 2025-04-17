@@ -23,7 +23,7 @@ def auto_create_user():
         "message": "User created",
         "user_id": new_user.user_id
     }), 201
-@app.route("/search", methods=["POST"])
+@app.route("/search", methods=["POST"], strict_slashes = False)
 def search_data():
     print("Incoming JSON:", request.json)
     print("Redis ping:", redis_client.ping())
