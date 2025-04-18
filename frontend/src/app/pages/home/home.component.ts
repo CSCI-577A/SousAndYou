@@ -1,24 +1,25 @@
 import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { Router } from '@angular/router';
 import { HttpClient } from '@angular/common/http';
-// import { NavbarComponent } from '../../shared/navbar/navbar.component';
 
 @Component({
   selector: 'app-home',
   standalone: true,
-  // imports: [CommonModule, FormsModule, NavbarComponent],
   imports: [CommonModule, FormsModule],
   templateUrl: './home.component.html',
   styleUrls: ['./home.component.css'],
 })
 export class HomeComponent {
   searchQuery: string = '';
-  searchResults: string[] = [];
   userId = localStorage.getItem("user_id");
+  isFirstSearch: boolean = true;
+  selectedRecipe: any = null;
+  showRecipeModal: boolean = false;
+  chatHistory: any[] = [];
+  
   constructor(private http: HttpClient) {}
-
+  
   ngOnInit():void {
     const storedId = localStorage.getItem('user_id');
     if (!storedId) {
@@ -28,15 +29,110 @@ export class HomeComponent {
       });
     } else {
       console.log('Existing user:', storedId);
-    }}
-
-
+    }
+  }
+  
   searchItem() {
-    this.http.post<{ results: string[] }>('http://127.0.0.1:5000/search',
-      { query: this.searchQuery, user_id: localStorage.getItem('user_id') })
+    if (!this.searchQuery.trim()) return;
+    
+    // Add user message to chat history
+    this.chatHistory.push({
+      type: 'user',
+      text: this.searchQuery
+    });
+    
+    const currentQuery = this.searchQuery;
+    this.searchQuery = ''; // Clear input field immediately
+    
+    this.http.post<{ results: any[] }>('http://127.0.0.1:5000/search',
+      { query: currentQuery, user_id: localStorage.getItem('user_id') })
       .subscribe(response => {
-        this.searchResults = response.results;
-        console.log('Search Results:', this.searchResults);
+        console.log('Search Results:', response.results);
+        
+        // Set first search to false to move search bar if needed
+        if (this.isFirstSearch) {
+          this.isFirstSearch = false;
+        }
+        
+        // Add each result as a system message in the chat
+        if (response.results && response.results.length > 0) {
+          response.results.forEach(result => {
+            this.chatHistory.push({
+              type: 'system',
+              content: result
+            });
+          });
+        } else {
+          // Add a no-results message
+          this.chatHistory.push({
+            type: 'system',
+            content: {
+              text: "I couldn't find any recipes matching your query. Please try a different search."
+            }
+          });
+        }
+        
+        // Scroll to bottom of chat
+        setTimeout(() => {
+          this.scrollToBottom();
+        }, 100);
       });
+  }
+  
+  scrollToBottom() {
+    const chatContainer = document.querySelector('.chat-container');
+    if (chatContainer) {
+      chatContainer.scrollTop = chatContainer.scrollHeight;
+    }
+  }
+  
+  viewRecipeDetails(content: any) {
+    // Only show recipe modal if this appears to be an actual recipe
+    this.selectedRecipe = content;
+    this.showRecipeModal = true;
+  }
+  
+  closeRecipeModal() {
+    this.showRecipeModal = false;
+    this.selectedRecipe = null;
+  }
+  
+  parseIngredients(ingredientsText: string): string[] {
+    if (!ingredientsText) return [];
+    // Split by newlines and remove empty entries
+    return ingredientsText.split('\n')
+      .map(item => item.trim())
+      .filter(item => item && !item.toLowerCase().includes('ingredients:'));
+  }
+  
+  // Check if content appears to be a recipe
+  isRecipeContent(text: string): boolean {
+    if (!text) return false;
+    
+    // Check for common recipe indicators
+    const recipeIndicators = [
+      'ingredients:',
+      'instructions:',
+      'directions:',
+      'recipe',
+      'cook time',
+      'prep time',
+      'servings',
+      'tablespoon',
+      'teaspoon',
+      'cup',
+      'ounce',
+      'pound'
+    ];
+    
+    const lowerText = text.toLowerCase();
+    return recipeIndicators.some(indicator => lowerText.includes(indicator));
+  }
+  
+  // Handle pressing enter in the input field
+  onKeyDown(event: KeyboardEvent) {
+    if (event.key === 'Enter' && this.searchQuery.trim()) {
+      this.searchItem();
+    }
   }
 }
