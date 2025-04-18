@@ -21,7 +21,7 @@ user_counter = 1
 def log_request():
     print(f"[Flask] {request.method} {request.path}")
 
-@app.route("/user/create", methods=["GET"])
+@app.route("/api/user/create", methods=["GET"])
 def auto_create_user():
     # create new user and cache
     new_user = create_user()
@@ -29,7 +29,7 @@ def auto_create_user():
         "message": "User created",
         "user_id": new_user.user_id
     }), 201
-@app.route("/search", methods=["POST"], strict_slashes = False)
+@app.route("/api/search", methods=["POST"], strict_slashes = False)
 def search_data():
     print("Redis keys:", redis_client.keys("*"))
     print("Incoming JSON:", request.json)
@@ -56,10 +56,10 @@ def search_data():
     output = user.get_recipe_suggestions(input)
     print(output)
     return jsonify({"results": output})
-@app.route("/set", methods=["GET"])
+@app.route("/api/set", methods=["GET"])
 def set_user_input():
     return jsonify({"data": data_store})
-@app.route("/data", methods=["GET"])
+@app.route("/api/data", methods=["GET"])
 def get_data():
     return jsonify({"data": data_store})
     
