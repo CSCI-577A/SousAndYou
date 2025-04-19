@@ -96,7 +96,7 @@ export class HomeComponent {
         console.log('Search Results:', this.searchResults);
       });
   }
-}
+
 
   scrollToBottom() {
     const chatContainer = document.querySelector('.chat-container');
