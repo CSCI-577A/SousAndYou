@@ -37,9 +37,9 @@ class User:
         history = redis_client.get(f"chat_history:{self.user_id}")
         print(history)
         return json.loads(history) if history else ""
-    def save_conversation_history(user_id, messages):
+    def save_conversation_history(self, messages):
         print("Convo history ")
-        redis_client.set(f"chat_history:{user_id}", json.dumps(messages))
+        redis_client.set(f"chat_history:{self.user_id}", json.dumps(messages))
         print(json.dumps(messages))
 
     def get_recipe_suggestions(self, user_input):
