@@ -2,6 +2,7 @@ import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { HttpClient } from '@angular/common/http';
+import { environment } from '../../../environments/environment';
 
 @Component({
   selector: 'app-home',
@@ -21,10 +22,12 @@ export class HomeComponent {
   ngOnInit(): void {
     const storedId = localStorage.getItem('user_id');
     if (!storedId) {
-      this.http.get<any>('/api/user/create').subscribe(res => {
-        localStorage.setItem('user_id', res.user_id);
-        console.log('New user created:', res.user_id);
-      });
+      this.http
+        .get<any>(`${environment.apiUrl}/user/create`)
+        .subscribe((res) => {
+          localStorage.setItem('user_id', res.user_id);
+          console.log('New user created:', res.user_id);
+        });
     } else {
       console.log('Existing user:', storedId);
     }
@@ -38,11 +41,11 @@ export class HomeComponent {
     this.searchQuery = '';
 
     this.http
-      .post<{ results: any[] }>('/api/search', {
+      .post<{ results: any[] }>(`${environment.apiUrl}/search`, {
         query: currentQuery,
         user_id: localStorage.getItem('user_id'),
       })
-      .subscribe(response => {
+      .subscribe((response) => {
         console.log('Search Results:', response.results);
 
         if (this.isFirstSearch) {
@@ -50,7 +53,7 @@ export class HomeComponent {
         }
 
         if (response.results && response.results.length > 0) {
-          response.results.forEach(result => {
+          response.results.forEach((result) => {
             this.chatHistory.push({
               type: 'system',
               content: result,
@@ -65,13 +68,14 @@ export class HomeComponent {
           });
 
           const lastSystemMessage =
-            response.results?.[response.results.length - 1]?.text?.toLowerCase();
+            response.results?.[
+              response.results.length - 1
+            ]?.text?.toLowerCase();
           if (lastSystemMessage && !this.isRecipeContent(lastSystemMessage)) {
             this.chatHistory.push({
               type: 'system',
               content: {
-                text:
-                  'Would you like a specific pasta recipe? For example, do you prefer tomato-based or cream-based sauces? Any ingredients you want to include or avoid?',
+                text: 'Would you like a specific pasta recipe? For example, do you prefer tomato-based or cream-based sauces? Any ingredients you want to include or avoid?',
               },
             });
           }
@@ -94,8 +98,8 @@ export class HomeComponent {
     if (!ingredientsText) return [];
     return ingredientsText
       .split('\n')
-      .map(item => item.trim())
-      .filter(item => item && !item.toLowerCase().includes('ingredients:'));
+      .map((item) => item.trim())
+      .filter((item) => item && !item.toLowerCase().includes('ingredients:'));
   }
 
   isRecipeContent(text: string): boolean {
@@ -115,7 +119,7 @@ export class HomeComponent {
       'pound',
     ];
     const lowerText = text.toLowerCase();
-    return recipeIndicators.some(indicator => lowerText.includes(indicator));
+    return recipeIndicators.some((indicator) => lowerText.includes(indicator));
   }
 
   onKeyDown(event: KeyboardEvent) {
@@ -129,7 +133,7 @@ export class HomeComponent {
     return text
       .replace(/(?:\r\n|\r|\n)/g, '<br>')
       .replace(/- /g, '• ')
-      .replace(/\d+\./g, match => `<strong>${match}</strong>`)
+      .replace(/\d+\./g, (match) => `<strong>${match}</strong>`)
       .replace(/([A-Z][a-z]+):/g, '<br><strong>$1:</strong>');
   }
 }
