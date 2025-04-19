@@ -1,6 +1,6 @@
 <div class="home-container">
   <main>
-    <!-- Initial search container, only shown on first load -->
+    <!-- Initial search container -->
     <div class="search-container" *ngIf="isFirstSearch">
       <h1>What would you like to eat?</h1>
       <div class="search-box">
@@ -12,59 +12,41 @@
           (keydown)="onKeyDown($event)"
         />
         <button (click)="searchItem()" type="submit">
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            viewBox="0 0 24 24"
-            width="24"
-            height="24"
-          >
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24">
             <path d="M0 0h24v24H0z" fill="none" />
             <path
-              d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"
+              d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 
+              16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 
+              5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 
+              4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 
+              11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 
+              9.5 11.99 14 9.5 14z"
             />
           </svg>
         </button>
       </div>
     </div>
-    
-    <!-- Chat container, shown after first search -->
+
+    <!-- Chat container -->
     <div class="chat-container" *ngIf="!isFirstSearch">
       <div class="chat-messages">
-        <div *ngFor="let message of chatHistory" 
-             [ngClass]="{'user-message': message.type === 'user', 'system-message': message.type === 'system'}">
-          
-          <!-- User message -->
+        <div *ngFor="let message of chatHistory" [ngClass]="{
+            'user-message': message.type === 'user',
+            'system-message': message.type === 'system'
+          }">
+          <!-- User -->
           <div *ngIf="message.type === 'user'" class="message-content">
             <p>{{ message.text }}</p>
           </div>
-          
-          <!-- System message -->
+
+          <!-- System -->
           <div *ngIf="message.type === 'system'" class="message-content">
-            <!-- If it's a recipe, show recipe card -->
-            <div *ngIf="message.content.text && isRecipeContent(message.content.text)" 
-                 class="recipe-card" 
-                 (click)="viewRecipeDetails(message.content)">
-              <h3>Recipe</h3>
-              <div class="recipe-preview">
-                <div>
-                  <p class="key-ingredients">Key Ingredients:</p>
-                  <ul>
-                    <li *ngFor="let ingredient of parseIngredients(message.content.text).slice(0, 3)">
-                      {{ ingredient }}
-                    </li>
-                  </ul>
-                </div>
-              </div>
-            </div>
-            
-            <!-- If it's not a recipe, show plain text -->
-            <div *ngIf="message.content.text && !isRecipeContent(message.content.text)" class="plain-text" [innerHTML]="formatText(message.content.text)">
-            </div>                       
+            <div *ngIf="message.content.text" [innerHTML]="formatText(message.content.text)"></div>
           </div>
         </div>
       </div>
-      
-      <!-- Fixed search box at bottom after first search -->
+
+      <!-- Search box at bottom -->
       <div class="bottom-search-box">
         <input
           type="text"
@@ -74,45 +56,19 @@
           (keydown)="onKeyDown($event)"
         />
         <button (click)="searchItem()" type="submit">
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            viewBox="0 0 24 24"
-            width="24"
-            height="24"
-          >
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24">
             <path d="M0 0h24v24H0z" fill="none" />
             <path
-              d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"
+              d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 
+              16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 
+              5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 
+              4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 
+              11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 
+              9.5 11.99 14 9.5 14z"
             />
           </svg>
         </button>
       </div>
     </div>
   </main>
-  
-  <!-- Recipe Details Modal -->
-  <div class="recipe-modal" *ngIf="showRecipeModal">
-    <div class="recipe-modal-content">
-      <button class="close-button" (click)="closeRecipeModal()">×</button>
-      <div *ngIf="selectedRecipe">
-        <h2>Recipe Details</h2>
-        <div class="recipe-details">
-          <div *ngIf="selectedRecipe.text && isRecipeContent(selectedRecipe.text)">
-            <h3>Ingredients:</h3>
-            <ul>
-              <li *ngFor="let ingredient of parseIngredients(selectedRecipe.text)">
-                {{ ingredient }}
-              </li>
-            </ul>
-            
-            <h3>Instructions:</h3>
-            <p>{{ selectedRecipe.text }}</p>
-          </div>
-          <div *ngIf="!isRecipeContent(selectedRecipe.text)" class="non-recipe-content">
-            <p>{{ selectedRecipe.text }}</p>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
 </div>

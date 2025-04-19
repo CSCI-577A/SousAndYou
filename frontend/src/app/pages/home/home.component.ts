@@ -12,15 +12,13 @@ import { HttpClient } from '@angular/common/http';
 })
 export class HomeComponent {
   searchQuery: string = '';
-  userId = localStorage.getItem("user_id");
+  userId = localStorage.getItem('user_id');
   isFirstSearch: boolean = true;
-  selectedRecipe: any = null;
-  showRecipeModal: boolean = false;
   chatHistory: any[] = [];
-  
+
   constructor(private http: HttpClient) {}
-  
-  ngOnInit():void {
+
+  ngOnInit(): void {
     const storedId = localStorage.getItem('user_id');
     if (!storedId) {
       this.http.get<any>('http://127.0.0.1:5000/user/create').subscribe(res => {
@@ -31,85 +29,78 @@ export class HomeComponent {
       console.log('Existing user:', storedId);
     }
   }
-  
+
   searchItem() {
     if (!this.searchQuery.trim()) return;
-    
-    // Add user message to chat history
-    this.chatHistory.push({
-      type: 'user',
-      text: this.searchQuery
-    });
-    
+
     const currentQuery = this.searchQuery;
-    this.searchQuery = ''; // Clear input field immediately
-    
-    this.http.post<{ results: any[] }>('http://127.0.0.1:5000/search',
-      { query: currentQuery, user_id: localStorage.getItem('user_id') })
+    this.chatHistory.push({ type: 'user', text: currentQuery });
+    this.searchQuery = ''; // clear input
+
+    this.http
+      .post<{ results: any[] }>('http://127.0.0.1:5000/search', {
+        query: currentQuery,
+        user_id: localStorage.getItem('user_id'),
+      })
       .subscribe(response => {
         console.log('Search Results:', response.results);
-        
-        // Set first search to false to move search bar if needed
+
         if (this.isFirstSearch) {
           this.isFirstSearch = false;
         }
-        
-        // Add each result as a system message in the chat
+
         if (response.results && response.results.length > 0) {
           response.results.forEach(result => {
             this.chatHistory.push({
               type: 'system',
-              content: result
+              content: result,
             });
           });
         } else {
-          // Add a no-results message
           this.chatHistory.push({
             type: 'system',
             content: {
-              text: "I couldn't find any recipes matching your query. Please try a different search."
-            }
+              text:
+                "I couldn't find any recipes matching your query. Please try a different search.",
+            },
           });
+
+          const lastSystemMessage =
+            response.results?.[response.results.length - 1]?.text?.toLowerCase();
+          if (lastSystemMessage && !this.isRecipeContent(lastSystemMessage)) {
+            this.chatHistory.push({
+              type: 'system',
+              content: {
+                text:
+                  'Would you like a specific pasta recipe? For example, do you prefer tomato-based or cream-based sauces? Any ingredients you want to include or avoid?',
+              },
+            });
+          }
         }
-        
-        // Scroll to bottom of chat
+
         setTimeout(() => {
           this.scrollToBottom();
         }, 100);
       });
   }
-  
+
   scrollToBottom() {
     const chatContainer = document.querySelector('.chat-container');
     if (chatContainer) {
       chatContainer.scrollTop = chatContainer.scrollHeight;
     }
   }
-  
-  viewRecipeDetails(content: any) {
-    // Only show recipe modal if this appears to be an actual recipe
-    this.selectedRecipe = content;
-    this.showRecipeModal = true;
-  }
-  
-  closeRecipeModal() {
-    this.showRecipeModal = false;
-    this.selectedRecipe = null;
-  }
-  
+
   parseIngredients(ingredientsText: string): string[] {
     if (!ingredientsText) return [];
-    // Split by newlines and remove empty entries
-    return ingredientsText.split('\n')
+    return ingredientsText
+      .split('\n')
       .map(item => item.trim())
       .filter(item => item && !item.toLowerCase().includes('ingredients:'));
   }
-  
-  // Check if content appears to be a recipe
+
   isRecipeContent(text: string): boolean {
     if (!text) return false;
-    
-    // Check for common recipe indicators
     const recipeIndicators = [
       'ingredients:',
       'instructions:',
@@ -122,24 +113,24 @@ export class HomeComponent {
       'teaspoon',
       'cup',
       'ounce',
-      'pound'
+      'pound',
     ];
-    
     const lowerText = text.toLowerCase();
     return recipeIndicators.some(indicator => lowerText.includes(indicator));
   }
-  
-  // Handle pressing enter in the input field
+
   onKeyDown(event: KeyboardEvent) {
     if (event.key === 'Enter' && this.searchQuery.trim()) {
       this.searchItem();
     }
   }
+
   formatText(text: string): string {
     if (!text) return '';
-    let formatted = text.replace(/\n/g, '<br>');
-    formatted = formatted.replace(/(Steps:)/gi, '<strong>$1</strong>');
-    formatted = formatted.replace(/(\d+\.\s)/g, '<br><strong>$1</strong>');
-    return formatted;
-  }  
+    return text
+      .replace(/(?:\r\n|\r|\n)/g, '<br>')
+      .replace(/- /g, '• ')
+      .replace(/\d+\./g, match => `<strong>${match}</strong>`)
+      .replace(/([A-Z][a-z]+):/g, '<br><strong>$1:</strong>');
+  }
 }
