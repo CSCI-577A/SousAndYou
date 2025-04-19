@@ -35,7 +35,6 @@ class User:
 
     def get_conversation_history(self):
         history = redis_client.get(f"chat_history:{self.user_id}")
-        print(history)
         return json.loads(history) if history else ""
     def save_conversation_history(self, messages):
         print("Convo history ")
@@ -48,25 +47,19 @@ class User:
         url = f"{EC2_HOST}/chat"
         history = self.get_conversation_history()
         message = user_input + history
-        print("history" + history)
         headers = {
             "Content-Type": "application/json"
         }
         payload = {
             "message": message
         }
-        print("sent Message")
 
         try:
             response = requests.post(url, headers=headers, json=payload)
-            print("response ")
-            print(response)
             response.raise_for_status()
             data = response.json()
             return_val = data.get("response", "No response field in result.")
-            print(data)
             full_response = "User asked: " + user_input + "\nClaude says: " + json.dumps(data) #data.get("response", "No response field in result.")
-            print("full response")
             self.save_conversation_history(full_response)
             return return_val
         except Exception as e:
