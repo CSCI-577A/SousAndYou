@@ -1,0 +1,55 @@
+name: Deploy Backend to EC2 using AWS SSM agent
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+jobs:
+  deploy-backend:
+    runs-on: ubuntu-latest
+    permissions:
+      id-token: write
+      contents: read
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Configure AWS credentials (OIDC)
+        uses: aws-actions/configure-aws-credentials@v2
+        with:
+          role-to-assume: ${{ secrets.AWS_OIDC_ARN }}
+          aws-region: ${{ secrets.AWS_REGION }}
+      
+      - name: Zip backend files
+        run: |
+          zip -r backend.zip . -x "*.git*"
+        working-directory: backend
+
+      - name: Upload to backend S3 bucket
+        run: |
+          aws s3 cp backend/backend.zip s3://${{ secrets.AWS_BACKEND_S3_BUCKET }}/backend.zip
+      
+      - name: Deploy to EC2 with SSM agent
+        run: |
+          aws ssm send-command \
+            --document-name "AWS-RunShellScript" \
+            --instance-ids ${{ secrets.AWS_EC2_INSTANCE_ID }} \
+            --comment "Deploy Backend Flask Endpoint" \
+            --parameters 'commands=[
+              "mkdir -p ${{ secrets.AWS_EC2_BACKEND_DIR }}",
+              "cd ${{ secrets.AWS_EC2_BACKEND_DIR }}",
+              "pkill -f flask_api.py || true",
+              "pkill -f app.py || true",
+              "aws s3 cp s3://${{ secrets.AWS_BACKEND_S3_BUCKET }}/backend.zip ./",
+              "unzip -o backend.zip",
+              "pip install -r requirements.txt",
+              "docker ps -a --format '{{.Names}}' | grep -q '^localhost$' && docker start localhost || docker run --name localhost -p 6379:6379 -d redis",
+              "docker exec localhost redis-cli set healthcheck writable || (echo \\\"Redis is read-only, recreating...\\\" && docker rm -f localhost && docker run --name localhost -p 6379:6379 -d redis)",
+              "nohup python3 /home/ec2-user/backend-deployment/flask_api.py > flask.log 2>&1 &",
+              "cd /home/ec2-user/backend",
+              "source venv/bin/activate",
+              "nohup python3 /home/ec2-user/backend/app.py > message.log 2>&1 &"
+            ]' \
+            --output text

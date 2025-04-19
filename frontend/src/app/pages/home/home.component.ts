@@ -28,6 +28,10 @@ export class HomeComponent {
           localStorage.setItem('user_id', res.user_id);
           console.log('New user created:', res.user_id);
         });
+      this.http.get<any>('/api/user/create').subscribe(res => {
+        localStorage.setItem('user_id', res.user_id);
+        console.log('New user created:', res.user_id);
+      });
     } else {
       console.log('Existing user:', storedId);
     }
@@ -84,6 +88,11 @@ export class HomeComponent {
         setTimeout(() => {
           this.scrollToBottom();
         }, 100);
+    this.http.post<{ results: string[] }>('/api/search',
+      { query: this.searchQuery, user_id: localStorage.getItem('user_id') })
+      .subscribe(response => {
+        this.searchResults = response.results;
+        console.log('Search Results:', this.searchResults);
       });
   }
 

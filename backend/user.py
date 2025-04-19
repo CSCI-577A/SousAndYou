@@ -55,14 +55,18 @@ class User:
         }
 
         try:
-            response = requests.post(url, headers=headers, json=payload)
+            response = requests.post(url, headers=headers, json=payload, verify=False)
+            print("Raw response:", response.text)
             response.raise_for_status()
             data = response.json()
+
             return_val = data.get("response", "No response field in result.")
             full_response = "User asked: " + user_input + "\nClaude says: " + json.dumps(data) #data.get("response", "No response field in result.")
             self.save_conversation_history(full_response)
             return return_val
+            print("Parsed JSON:", data)
+            return data.get("response", "No response field in result.")
         except Exception as e:
-            print("Error:", e)
+            print("Error in get_recipe_suggestions:", e)
             return None
 
