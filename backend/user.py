@@ -1,3 +1,5 @@
+import json
+
 import redis
 import requests
 
@@ -17,7 +19,6 @@ class User:
             "time_available": "",
             "ingredient_availability": []
         }
-        self.history = []
 
 
     def _get_query_cache_key(self):
@@ -32,23 +33,42 @@ class User:
         key = self._get_query_cache_key()
         return redis_client.lrange(key, 0, -1)
 
+    def get_conversation_history(self):
+        history = redis_client.get(f"chat_history:{self.user_id}")
+        print(history)
+        return json.loads(history) if history else ""
+    def save_conversation_history(user_id, messages):
+        print("Convo history ")
+        redis_client.set(f"chat_history:{user_id}", json.dumps(messages))
+        print(json.dumps(messages))
 
     def get_recipe_suggestions(self, user_input):
         # cache the query
         self.cache_query(user_input)
         url = f"{EC2_HOST}/chat"
+        history = self.get_conversation_history()
+        message = user_input + history
+        print("history" + history)
         headers = {
             "Content-Type": "application/json"
         }
         payload = {
-            "message": user_input
+            "message": message
         }
+        print("sent Message")
 
         try:
             response = requests.post(url, headers=headers, json=payload)
+            print("response ")
+            print(response)
             response.raise_for_status()
             data = response.json()
-            return data.get("response", "No response field in result.")
+            return_val = data.get("response", "No response field in result.")
+            print(data)
+            full_response = "User asked: " + user_input + "\nClaude says: " + json.dumps(data) #data.get("response", "No response field in result.")
+            print("full response")
+            self.save_conversation_history(full_response)
+            return return_val
         except Exception as e:
             print("Error:", e)
             return None

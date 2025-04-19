@@ -35,6 +35,7 @@ def search_data():
     user = pickle.loads(raw_user)
     print(user)
     output = user.get_recipe_suggestions(input)
+    print("out")
     print(output)
     return jsonify({"results": output})
 @app.route("/set", methods=["GET"])
