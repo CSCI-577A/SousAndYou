@@ -58,9 +58,8 @@
             </div>
             
             <!-- If it's not a recipe, show plain text -->
-            <div *ngIf="message.content.text && !isRecipeContent(message.content.text)" class="plain-text">
-              <p>{{ message.content.text }}</p>
-            </div>
+            <div *ngIf="message.content.text && !isRecipeContent(message.content.text)" class="plain-text" [innerHTML]="formatText(message.content.text)">
+            </div>                       
           </div>
         </div>
       </div>

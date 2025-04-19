@@ -135,4 +135,11 @@ export class HomeComponent {
       this.searchItem();
     }
   }
+  formatText(text: string): string {
+    if (!text) return '';
+    let formatted = text.replace(/\n/g, '<br>');
+    formatted = formatted.replace(/(Steps:)/gi, '<strong>$1</strong>');
+    formatted = formatted.replace(/(\d+\.\s)/g, '<br><strong>$1</strong>');
+    return formatted;
+  }  
 }
