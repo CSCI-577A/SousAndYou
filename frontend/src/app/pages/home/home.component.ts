@@ -1,7 +1,7 @@
 import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpClientModule } from '@angular/common/http';
 import { environment } from '../../../environments/environment';
 
 @Component({
@@ -16,6 +16,7 @@ export class HomeComponent {
   userId = localStorage.getItem('user_id');
   isFirstSearch: boolean = true;
   chatHistory: any[] = [];
+  searchResults: string[] = []
 
   constructor(private http: HttpClient) {}
 
@@ -95,6 +96,7 @@ export class HomeComponent {
         console.log('Search Results:', this.searchResults);
       });
   }
+}
 
   scrollToBottom() {
     const chatContainer = document.querySelector('.chat-container');
