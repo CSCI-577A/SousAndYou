@@ -21,7 +21,7 @@ export class HomeComponent {
   ngOnInit(): void {
     const storedId = localStorage.getItem('user_id');
     if (!storedId) {
-      this.http.get<any>('http://127.0.0.1:5000/user/create').subscribe(res => {
+      this.http.get<any>('/api/user/create').subscribe(res => {
         localStorage.setItem('user_id', res.user_id);
         console.log('New user created:', res.user_id);
       });
@@ -35,10 +35,10 @@ export class HomeComponent {
 
     const currentQuery = this.searchQuery;
     this.chatHistory.push({ type: 'user', text: currentQuery });
-    this.searchQuery = ''; // clear input
+    this.searchQuery = '';
 
     this.http
-      .post<{ results: any[] }>('http://127.0.0.1:5000/search', {
+      .post<{ results: any[] }>('/api/search', {
         query: currentQuery,
         user_id: localStorage.getItem('user_id'),
       })
@@ -60,8 +60,7 @@ export class HomeComponent {
           this.chatHistory.push({
             type: 'system',
             content: {
-              text:
-                "I couldn't find any recipes matching your query. Please try a different search.",
+              text: "I couldn't find any recipes matching your query. Please try a different search.",
             },
           });
 
