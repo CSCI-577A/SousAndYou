@@ -16,7 +16,7 @@ export class HomeComponent {
   userId = localStorage.getItem('user_id');
   isFirstSearch: boolean = true;
   chatHistory: any[] = [];
-  searchResults: string[] = []
+  //searchResults: string[] = []
 
   constructor(private http: HttpClient) {}
 
@@ -92,8 +92,8 @@ export class HomeComponent {
     this.http.post<{ results: string[] }>('/api/search',
       { query: this.searchQuery, user_id: localStorage.getItem('user_id') })
       .subscribe(response => {
-        this.currentQuery = response.results;
-        console.log('Search Results:', this.currentQuery);
+        this.searchResults = response.results;
+        console.log('Search Results:', this.searchResults);
       });
     });
   }
