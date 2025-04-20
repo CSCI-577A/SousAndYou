@@ -21,16 +21,13 @@ export class HomeComponent {
 
   ngOnInit(): void {
     const storedId = localStorage.getItem('user_id');
-    if (!storedId) {
-      this.http
-        .get<any>( `${environment.apiUrl}/user/create` )
-        .subscribe((res) => {
-          localStorage.setItem('user_id', res.user_id);
-          console.log('New user created:', res.user_id);
-        });
-    } else {
-      console.log('Existing user:', storedId);
-    }
+    this.http
+      .get<any>( `${environment.apiUrl}/user/create` )
+      .subscribe((res) => {
+        localStorage.setItem('user_id', res.user_id);
+        console.log('New user created:', res.user_id);
+      });
+
   }
 
   searchItem() {
