@@ -46,11 +46,9 @@ class User:
         self.cache_query(user_input)
         url = f"{EC2_HOST}/chat"
         history = self.get_conversation_history()
-<<<<<<< HEAD
+
         message = user_input + history
-=======
         message = "Give me 5 recipes " + user_input + history
->>>>>>> 98afb429 (Update to user.py)
         headers = {
             "Content-Type": "application/json"
         }
