@@ -35,7 +35,8 @@ class User:
 
     def get_conversation_history(self):
         history = redis_client.lrange(f"chat_history:{self.user_id}", 0, -1)
-        history = [json.loads(item) for item in history]
+        history = "\n".join(json.loads(item) for item in history)
+        print(history)
         return history
     def save_conversation_history(self, messages):
         print("Convo history ")
