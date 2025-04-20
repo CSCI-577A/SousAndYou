@@ -44,11 +44,7 @@ jobs:
         run: |
           aws s3 sync frontend/dist/sous-and-you/browser s3://${{ secrets.AWS_S3_BUCKET }} \
             --delete \
-            --content-type "" \
-            --metadata-directive REPLACE
           
-
-
       - name: Invalidate CloudFront cache
         env:
           super_secret:  ${{ secrets.CLOUDFRONT_DISTRIBUTION_ID }}
