@@ -95,7 +95,7 @@ export class HomeComponent {
         this.searchResults = response.results;
         console.log('Search Results:', this.searchResults);
       });
-    }
+    });
   }
 
 
