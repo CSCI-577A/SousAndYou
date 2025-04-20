@@ -1,3 +1,5 @@
+import json
+
 import redis
 import requests
 
@@ -17,7 +19,6 @@ class User:
             "time_available": "",
             "ingredient_availability": []
         }
-        self.history = []
 
 
     def _get_query_cache_key(self):
@@ -32,16 +33,25 @@ class User:
         key = self._get_query_cache_key()
         return redis_client.lrange(key, 0, -1)
 
+    def get_conversation_history(self):
+        history = redis_client.get(f"chat_history:{self.user_id}")
+        return json.loads(history) if history else ""
+    def save_conversation_history(self, messages):
+        print("Convo history ")
+        redis_client.set(f"chat_history:{self.user_id}", json.dumps(messages))
+        print(json.dumps(messages))
 
     def get_recipe_suggestions(self, user_input):
         # cache the query
         self.cache_query(user_input)
         url = f"{EC2_HOST}/chat"
+        history = self.get_conversation_history()
+        message = user_input + history
         headers = {
             "Content-Type": "application/json"
         }
         payload = {
-            "message": user_input
+            "message": message
         }
 
         try:
@@ -49,6 +59,11 @@ class User:
             print("Raw response:", response.text)
             response.raise_for_status()
             data = response.json()
+
+            return_val = data.get("response", "No response field in result.")
+            full_response = "User asked: " + user_input + "\nClaude says: " + json.dumps(data) #data.get("response", "No response field in result.")
+            self.save_conversation_history(full_response)
+            return return_val
             print("Parsed JSON:", data)
             return data.get("response", "No response field in result.")
         except Exception as e:
