@@ -34,11 +34,12 @@ class User:
         return redis_client.lrange(key, 0, -1)
 
     def get_conversation_history(self):
-        history = redis_client.get(f"chat_history:{self.user_id}")
-        return json.loads(history) if history else ""
+        history = redis_client.lrange(f"chat_history:{self.user_id}", 0, -1)
+        history = [json.loads(item) for item in history]
+        return history
     def save_conversation_history(self, messages):
         print("Convo history ")
-        redis_client.set(f"chat_history:{self.user_id}", json.dumps(messages))
+        redis_client.rpush(f"chat_history:{self.user_id}", json.dumps(messages))
         print(json.dumps(messages))
 
     def get_recipe_suggestions(self, user_input):
@@ -46,11 +47,10 @@ class User:
         self.cache_query(user_input)
         url = f"{EC2_HOST}/chat"
         history = self.get_conversation_history()
-<<<<<<< HEAD
-        message = user_input + history
-=======
-        message = "Give me 5 recipes " + user_input + history
->>>>>>> 98afb429 (Update to user.py)
+        message = ""
+        if len(history) == 0:
+            message = "You are a recipe generator. If I ask for a recipe give me 5 recipes that fit the given parameters. "
+        message = message + user_input + history
         headers = {
             "Content-Type": "application/json"
         }
