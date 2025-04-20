@@ -24,7 +24,7 @@ export class HomeComponent {
     const storedId = localStorage.getItem('user_id');
     if (!storedId) {
       this.http
-        .get<any>(`${environment.apiUrl}/user/create`)
+        .get<any>('/api/user/create')
         .subscribe((res) => {
           localStorage.setItem('user_id', res.user_id);
           console.log('New user created:', res.user_id);
@@ -46,7 +46,7 @@ export class HomeComponent {
     this.searchQuery = '';
 
     this.http
-      .post<{ results: any[] }>(`${environment.apiUrl}/search`, {
+      .post<{ results: any[] }>('/api/search', {
         query: currentQuery,
         user_id: localStorage.getItem('user_id'),
       })
