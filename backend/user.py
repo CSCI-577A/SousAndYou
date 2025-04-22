@@ -72,6 +72,8 @@ class User:
             print(full_response)
             self.save_conversation_history(full_response)
             return return_val
+            print("Parsed JSON:", data)
+            return data.get("response", "No response field in result.")
         except Exception as e:
             print("Error:", e)
             return None
