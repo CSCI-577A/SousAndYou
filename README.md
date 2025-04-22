@@ -14,5 +14,3 @@ docker run --name localhost -p 6379:6379 -d redis
 pip install -r backend\requirements.txt
 python3 backend\flask_api.py
 
-## Branch
-Pull off of demo_testing branch to connect to properly connect to EC2 instance
