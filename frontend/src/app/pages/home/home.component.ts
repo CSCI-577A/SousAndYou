@@ -21,20 +21,12 @@ export class HomeComponent {
 
   ngOnInit(): void {
     const storedId = localStorage.getItem('user_id');
-    if (!storedId) {
-      this.http
-        .get<any>(`${environment.apiUrl}/user/create`)
-        .subscribe((res) => {
-          localStorage.setItem('user_id', res.user_id);
-          console.log('New user created:', res.user_id);
-        });
-      this.http.get<any>('/api/user/create').subscribe(res => {
+    this.http
+      .get<any>( `${environment.apiUrl}/user/create` )
+      .subscribe((res) => {
         localStorage.setItem('user_id', res.user_id);
         console.log('New user created:', res.user_id);
       });
-    } else {
-      console.log('Existing user:', storedId);
-    }
   }
 
   searchItem() {
@@ -45,7 +37,7 @@ export class HomeComponent {
     this.searchQuery = '';
 
     this.http
-      .post<{ results: any[] }>(`${environment.apiUrl}/search`, {
+      .post<{ results: any[] }>( `${environment.apiUrl}/search`, {
         query: currentQuery,
         user_id: localStorage.getItem('user_id'),
       })

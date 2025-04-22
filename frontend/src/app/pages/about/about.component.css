@@ -1,76 +1,114 @@
 .about-container {
-  background-color: #1d2b24;
+  background-color: #2d4c3b;
   color: white;
   font-family: Arial, Helvetica, sans-serif;
   text-align: center;
-  padding: 40px;
+  padding: 20px 40px 30px;
 }
 
 .about-section {
   display: flex;
   align-items: center;
   gap: 40px;
-  padding: 60px;
+  padding: 50px 20px;
+  max-width: 1000px;
+  margin: 0 auto;
+  justify-content: center;
 }
 
 .about-left-pane {
-  flex: 1;
+  flex: 0 0 auto;
   display: flex;
+  justify-content: center;
+  align-items: center;
 }
 
 .about-logo {
-  width: 250px;
+  width: 200px;
   border-radius: 10px;
 }
 
 .about-right-pane {
   flex: 2;
-  max-width: 600px;
+  max-width: 620px;
+  min-width: 280px;
   text-align: left;
 }
 
-.about-right h1 {
-  font-size: 36px;
+.about-right-pane h1 {
+  font-size: 2.5rem;
+  margin-bottom: 1rem;
 }
 
-.about-right p {
-  font-size: 18px;
-  line-height: 1.6;
+.about-right-pane p {
+  font-size: 1.1rem;
+  line-height: 1.8;
+  color: #e5e5e5;
+}
+
+.section-divider {
+  border: none;
+  width: 80%;
+  height: 1px;
+  background: rgba(255, 255, 255, 0.2);
+  margin: 40px auto 40px;
 }
 
 .team-section h2 {
-  font-size: 28px;
+  font-size: 2.2rem;
+  font-weight: 600;
+  margin-top: 0;
+  margin-bottom: 2rem;
+  text-align: center;
+  letter-spacing: 0.5px;
 }
 
 .team-list {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 10px;
+  padding-top: 20px;
+  margin-bottom: 40px;
+  justify-content: center;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
 }
 
 .team-member {
-  background: #2b3a32;
-  padding: 10px;
-  border-radius: 10px;
-  width: 250px;
-  text-align: center;
+  background: #3e594d;
+  padding: 20px;
+  border-radius: 12px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 }
+
+.team-member:hover {
+  transform: translateY(-5px);
+}
+
 .team-member h3 {
-  font-size: 15px;
+  font-size: 1rem;
+  margin-bottom: 8px;
+  color: white;
 }
 
 .team-member-role {
-  font-size: 12px;
+  font-size: 0.9rem;
   font-style: italic;
-  color: whitesmoke;
+  color: #cfd8dc;
 }
 
 @media (max-width: 768px) {
   .about-section {
     flex-direction: column;
     text-align: center;
+    padding: 30px 20px;
   }
 
   .about-right-pane {
     text-align: center;
+    padding-top: 20px;
+  }
+
+  .about-logo {
+    margin: 0 auto;
+    width: 180px;
   }
 }

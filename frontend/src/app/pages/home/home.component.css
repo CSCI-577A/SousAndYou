@@ -35,11 +35,13 @@ main {
   position: relative;
   width: 100%;
   max-width: 500px;
+  margin: 0 auto;
+  display: flex;
 }
 
 .search-box input {
   width: 100%;
-  padding: 12px 50px 12px 20px;
+  padding: 12px 20px 12px 20px;
   border-radius: 30px;
   border: none;
   font-size: 1rem;
@@ -48,13 +50,13 @@ main {
 
 .search-box button {
   position: absolute;
-  right: 5px;
+  right: 16px;
   top: 50%;
   transform: translateY(-50%);
   background: none;
   border: none;
   cursor: pointer;
-  padding: 8px;
+  padding: 0;
 }
 
 .search-box svg {
@@ -147,11 +149,12 @@ main {
   width: 100%;
   max-width: 500px;
   margin: 16px auto;
+  display: flex;
 }
 
 .bottom-search-box input {
   width: 100%;
-  padding: 12px 50px 12px 20px;
+  padding: 12px 20px 12px 20px;
   border-radius: 30px;
   border: none;
   font-size: 1rem;
@@ -160,13 +163,13 @@ main {
 
 .bottom-search-box button {
   position: absolute;
-  right: 5px;
+  right: 16px;
   top: 50%;
   transform: translateY(-50%);
   background: none;
   border: none;
   cursor: pointer;
-  padding: 8px;
+  padding: 0px;
 }
 
 .bottom-search-box svg {
