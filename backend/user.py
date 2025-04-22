@@ -1,3 +1,5 @@
+import json
+
 import redis
 import requests
 
@@ -17,7 +19,6 @@ class User:
             "time_available": "",
             "ingredient_availability": []
         }
-        self.history = []
 
 
     def _get_query_cache_key(self):
@@ -32,26 +33,47 @@ class User:
         key = self._get_query_cache_key()
         return redis_client.lrange(key, 0, -1)
 
+    def get_conversation_history(self):
+        history = redis_client.lrange(f"chat_history:{self.user_id}", 0, -1)
+        history = "\n".join(json.loads(item) for item in history)
+        print(history)
+        return history
+    def save_conversation_history(self, messages):
+        print("Convo history ")
+        redis_client.rpush(f"chat_history:{self.user_id}", json.dumps(messages))
+        print(json.dumps(messages))
 
     def get_recipe_suggestions(self, user_input):
         # cache the query
         self.cache_query(user_input)
         url = f"{EC2_HOST}/chat"
+        history = str(self.get_conversation_history())
+        print(history)
+        message = ""
+        if len(history) == 0:
+            message = "You are a recipe generator. If I ask for a recipe give me 5 recipes that fit the given parameters. "
+        message = message + user_input + history
         headers = {
             "Content-Type": "application/json"
         }
         payload = {
-            "message": user_input
+            "message": message
         }
 
         try:
-            response = requests.post(url, headers=headers, json=payload, verify=False)
-            print("Raw response:", response.text)
+            print("sending")
+            response = requests.post(url, headers=headers, json=payload)
+            print("sent")
             response.raise_for_status()
             data = response.json()
+            print(data)
+            return_val = data.get("response", "No response field in result.")
+            full_response = "User asked: " + user_input + "\nClaude says: " + json.dumps(data) #data.get("response", "No response field in result.")
+            print(full_response)
+            self.save_conversation_history(full_response)
+            return return_val
             print("Parsed JSON:", data)
             return data.get("response", "No response field in result.")
         except Exception as e:
-            print("Error in get_recipe_suggestions:", e)
+            print("Error:", e)
             return None
-

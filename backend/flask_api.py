@@ -23,8 +23,10 @@ def log_request():
 
 @app.route("/api/user/create", methods=["GET"])
 def auto_create_user():
+    print("creating user")
     # create new user and cache
     new_user = create_user()
+    print("created user")
     return jsonify({
         "message": "User created",
         "user_id": new_user.user_id
@@ -54,6 +56,7 @@ def search_data():
         user = pickle.loads(raw_user)
     print(user)
     output = user.get_recipe_suggestions(input)
+    print("out")
     print(output)
     return jsonify({"results": output})
 @app.route("/api/set", methods=["GET"])
